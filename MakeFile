@@ -1,0 +1,82 @@
+# Docker Compose Makefile
+
+# Docker Compose command
+DC := docker compose
+
+# Compose file (change if needed)
+COMPOSE_FILE := docker-compose.yml
+
+# Main service (used by bash/sh/exec)
+SERVICE ?= app
+
+# Command to execute with make exec
+CMD ?= bash
+
+.PHONY: help up down build rebuild start stop restart logs ps bash sh exec clean pull
+
+help:
+	@echo ""
+	@echo "Docker Compose Makefile"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make <command>"
+	@echo ""
+	@echo "Commands:"
+	@echo "  up        Start containers in detached mode"
+	@echo "  down      Stop and remove containers"
+	@echo "  build     Build or rebuild images"
+	@echo "  rebuild   Rebuild images without cache"
+	@echo "  start     Start existing containers"
+	@echo "  stop      Stop running containers"
+	@echo "  restart   Restart containers"
+	@echo "  logs      Follow container logs"
+	@echo "  ps        List running containers"
+	@echo "  bash      Open a Bash shell"
+	@echo "  sh        Open a SH shell"
+	@echo "  exec      Execute a custom command"
+	@echo "  pull      Pull latest images"
+	@echo "  clean     Remove containers, volumes and unused resources"
+	@echo ""
+
+up:
+	$(DC) -f $(COMPOSE_FILE) up -d
+
+down:
+	$(DC) -f $(COMPOSE_FILE) down
+
+build:
+	$(DC) -f $(COMPOSE_FILE) build
+
+rebuild:
+	$(DC) -f $(COMPOSE_FILE) build --no-cache
+
+start:
+	$(DC) -f $(COMPOSE_FILE) start
+
+stop:
+	$(DC) -f $(COMPOSE_FILE) stop
+
+restart:
+	$(DC) -f $(COMPOSE_FILE) restart
+
+logs:
+	$(DC) -f $(COMPOSE_FILE) logs -f
+
+ps:
+	$(DC) -f $(COMPOSE_FILE) ps
+
+bash:
+	$(DC) -f $(COMPOSE_FILE) exec $(SERVICE) bash
+
+sh:
+	$(DC) -f $(COMPOSE_FILE) exec $(SERVICE) sh
+
+exec:
+	$(DC) -f $(COMPOSE_FILE) exec $(SERVICE) $(CMD)
+
+pull:
+	$(DC) -f $(COMPOSE_FILE) pull
+
+clean:
+	$(DC) -f $(COMPOSE_FILE) down -v --remove-orphans
+	docker system prune -f
